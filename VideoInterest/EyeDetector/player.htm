@@ -1,0 +1,57 @@
+<html>
+
+
+<iframe id="existing-iframe-example"
+        width="640" height="360"
+        src="https://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1"
+	allowfullscreen="allowfullscreen" 
+	mozallowfullscreen="mozallowfullscreen" 
+	msallowfullscreen="msallowfullscreen" 
+	oallowfullscreen="oallowfullscreen" 
+	webkitallowfullscreen="webkitallowfullscreen"
+></iframe>
+
+<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script type="text/javascript">
+
+var socket = io.connect('http://127.0.0.1:5000');
+socket.on('connect', function connect() {
+		alert('Connected');
+		socket.emit('message', "Connected to FLASK");	
+	});
+
+var tag = document.createElement('script');
+tag.id = 'iframe-demo';
+tag.src = 'https://www.youtube.com/iframe_api';
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+var player;
+		function onYouTubeIframeAPIReady() {
+			player = new YT.Player('existing-iframe-example', {
+				events: {
+				}
+			});
+		}
+
+socket.on('message', function (data) {
+	if(data === "slow"){
+		player.setPlaybackRate(1);
+		player.setVolume(100);
+	}
+	else if(data === "fast"){
+		player.setPlaybackRate(2);
+		player.setVolume(50);
+	}
+	else if(data === "medium"){
+		player.setPlaybackRate(1.5);
+		player.setVolume(75);
+	}
+});
+
+setInterval(function(){ socket.emit('message', "Changed State"); }, 2500);
+
+</script>
+
+
+</html>
